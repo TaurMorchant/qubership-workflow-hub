@@ -77,6 +77,16 @@ The passphrase for the GPG private key.
 **Optional**
 Sonar token. Default to `''`
 
+### `github-username`
+
+**Optional**
+GitHub username for GitHub Packages authentication. Defaults to `github.actor`.
+
+### `github-token`
+
+**Optional**
+GitHub token for GitHub Packages authentication. Defaults to `github.token`. Use a PAT or token with appropriate permissions for cross-repository publishing.
+
 ## Example Usage
 
 ```yaml
@@ -120,6 +130,19 @@ jobs:
           maven-token: ${{ github.token }} # For maven central repository it would be ${{ secrets.MAVEN_PASSWORD}}. Already set for Netcracker.
           gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }} # Organization level secret. Already set for Netcracker.
           gpg-passphrase: ${{ secrets.MAVEN_GPG_PASSPHRASE }} # Organization level secret. Already set for Netcracker.
+
+      # Cross-repository publishing example:
+      # Use this when you need to publish artifacts to GitHub Packages of a different repository
+      - name: Deploy to another repository's GitHub Packages
+        uses: netcracker/qubership-workflow-hub/actions/maven-snapshot-deploy@main
+        with:
+          java-version: '17'
+          target-store: 'github'
+          maven-command: 'deploy'
+          additional-mvn-args: '-Dskip.tests=true'
+          maven-token: ${{ secrets.MAVEN_PASSWORD }}
+          github-username: ${{ secrets.TARGET_REPO_USERNAME }} # Username with write access to target repository
+          github-token: ${{ secrets.TARGET_REPO_TOKEN }} # PAT with packages:write scope for target repository
 ```
 
 ## How It Works
